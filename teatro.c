@@ -6,7 +6,7 @@
 #define RESERVADO 0
 #define AVENDA 1
 #define VAGO 2
-#define CORREDOR 88;
+#define CORREDOR 88
 #define NUMERO_SESSOES 10
 #define LIMITE_FILA 360
 typedef struct {
@@ -14,23 +14,28 @@ typedef struct {
     int status;
     int linha;
     int coluna;
+    int codSessao;
 } assento;
+
+typedef struct {
+	assento reserva[LIMITE_FILA];
+	int inicio, fim, total;
+}filaEstatica;
+
 typedef struct {
     int codSessao;
     char nomeSessao[40];
     char data[9];
+    filaEstatica filaReservas;
+    
 } sessao;
-
 typedef struct {
     sessao item[NUMERO_SESSOES];
     int prim;
     int ult;
 } listaEstatica;
 
-typedef struct {
-	assento reserva[LIMITE_FILA];
-	int inicio, fim, total;
-}filaEstatica;
+typedef assento teatro;
 
 void criarListaVazia(listaEstatica *l) {
     l->prim = 0;
@@ -59,9 +64,9 @@ int verificaFilaVazia(filaEstatica fila){
 	return fila.inicio == fila.fim;
 }
 
-int reservaAssento(sessao apresentacao, filaEstatica *fila, assento cadeira){
+int reservaAssento(filaEstatica *fila, assento cadeira){
 	if(verificaFilaCheia(*fila)){
-		printf("Assentos esgotados, tente outra sess√£o");
+		printf("Assentos esgotados, tente outra sess„o");
 	} else if(cadeira.status != RESERVADO) {
 		fila->reserva[fila->fim] = cadeira;
 		fila->reserva[fila->fim].status = RESERVADO;
@@ -69,20 +74,20 @@ int reservaAssento(sessao apresentacao, filaEstatica *fila, assento cadeira){
 		fila->total++;
 		
 	} else {
-		printf("O assento especificado j√° foi reservado");
+		printf("O assento especificado j· foi reservado");
 	}
 }
 
-int cancelarReserva(sessao apresentacao, filaEstatica *fila, assento *cadeira){
+int cancelarReserva(filaEstatica *fila, assento *cadeira){
 	if(verificaFilaVazia) {
-		printf("N√£o h√° reservas");
+		printf("N„o h· reservas");
 	} else if(cadeira->status = RESERVADO) {
 		*cadeira = fila->reserva[fila->inicio];
 		fila->reserva[fila->inicio].status = AVENDA;
 		fila->inicio = (fila->inicio + 1) % LIMITE_FILA;
 		fila->total--;
 	} else {
-		printf("Esse assento n√£o foi reservado");
+		printf("Esse assento n„o foi reservado");
 	}
 	
 }
@@ -181,7 +186,7 @@ void resetTeatro(teatro assentos[LIN][COL]) {
             if (c == 0 || c == 11 || c == 22) {
                 assentos[l][c].status = CORREDOR;
             } else {
-                assentos[l][c].status = RESERVADO;
+                assentos[l][c].status = VAGO;
             }
         }
     }
@@ -194,7 +199,12 @@ void exibeMatrizTeatro(teatro assentos[LIN][COL]) {
             if (c == 0) {
                 printf("%d", l);
             }
-            printf("%3d", assentos[l][c].status);
+            if(assentos[l][c].status == CORREDOR){
+            	printf("\t");
+			}
+			else{
+				printf("%3d", assentos[l][c].status);
+			}
         }
         printf("\n");
     }
@@ -213,14 +223,14 @@ void cadastrarSessao(sessao apresentacao) {
 
 
 void palco() {
-    printf("_____________________________________________________________________\n");
-    printf("|                                                                    |\n");
-    printf("|                                                                    |\n");
-    printf("|                         P A L C O                                  |\n");
-    printf("|                                                                    |\n");
-    printf("|                                                                    |\n");
-    printf("|____________________________________________________________________|\n\n");
-    printf("      1  2  3  4  5  6  7  8  9  10   12  13 14 15 16 17 18 19 20 21\n");
+    printf("\t_____________________________________________________________________\n");
+    printf("\t|                                                                    |\n");
+    printf("\t|                                                                    |\n");
+    printf("\t|                         P A L C O                                  |\n");
+    printf("\t|                                                                    |\n");
+    printf("\t|                                                                    |\n");
+    printf("\t|____________________________________________________________________|\n\n");
+    printf("\t  1  2  3  4  5  6  7  8  9 10   12 13 14 15 16 17 18 19 20 21\t\n");
 }
 
 void menu() {
@@ -229,8 +239,8 @@ void menu() {
     printf("\t 2 - Remover Sessao      - TEATRO\n");
     printf("\t 3 - Consultar sessao    - TEATRO\n");
     printf("\t 4 - Exibir sessoes que vao acontecer - TEATRO\n");
-    printf("\t 5 - VENDER ASSENTOS - TEATRO\n");
-    printf("\t 6 - RESERVAR ASSENTOS - TEATRO\n");
+    printf("\t 5 - RESERVAR ASSENTOS - TEATRO\n");
+    printf("\t 6 - CANCELAR RESERVA - TEATRO\n");
     printf("\t 7 - Sair - TEATRO\n");
 }
 
@@ -240,21 +250,21 @@ void menu() {
 int main() {
     teatro matrizTeatro[LIN][COL];
     sessao apresentacao;
-    teatro assento;
+    teatro *assento;
 
     listaEstatica listaSessoes;
 
+	filaEstatica *filaReservas;
     palco();
 
-    //Apenas cria o teatro com os lugares previamente preenchidos com status RESERVADO
+    //Apenas cria o teatro com os lugares previamente preenchidos com status VAGO
     resetTeatro(matrizTeatro);
-
-    exibeMatrizTeatro(matrizTeatro);
 
     menu();
 
-    int opcao, codigo;
+    int linha, coluna, opcao, codigo, indice;
     while (opcao != 7) {
+		exibeMatrizTeatro(matrizTeatro);
         printf("\nOPCAO: ");
         scanf("%d", &opcao);
         switch (opcao) {
@@ -276,14 +286,40 @@ int main() {
                 exibirListaSessoes(listaSessoes);
                 break;
             case 5:
-                //Vender assentos
+            	printf("\nInsira o codigo da sessao cujo assento sera vendido:");
+				scanf("%d",&codigo);
+            	printf("\nInsira a linha do assento que deseja vender:");
+                scanf("%d", &linha);
+                printf("\n insira a coluna do assento que deseja vender : ");
+                scanf("%d",&coluna);
+                matrizTeatro[linha][coluna].status = RESERVADO;
+                matrizTeatro[linha][coluna].codSessao = codigo;
+                matrizTeatro[linha][coluna].coluna = coluna;
+                matrizTeatro[linha][coluna].linha = linha;
+                matrizTeatro[linha][coluna].cod = rand()%1000;
+                reservaAssento(filaReservas, matrizTeatro[linha][coluna]);
+                printf("\nReserva concluida. Codigo: %d\n",matrizTeatro[linha][coluna].cod);
                 break;
             case 6:
-                //reservar
+            	printf("\nInsira o codigo do assento a ser reposto a venda: ");
+            	scanf("%d",&codigo);
+            	linha = 0;
+            	coluna = 0;
+            	while(matrizTeatro[linha][coluna].cod != codigo){
+            		while(matrizTeatro[linha][coluna].cod != codigo){
+            			coluna++;
+					}
+					linha++;
+				}
+				*assento = matrizTeatro[linha][coluna];
+				cancelarReserva(filaReservas, assento);
+				printf("\nCancelamento concluido.");
                 break;
             case 7:
+            	printf("\nTenha um bom dia!\nFinalizando...\n");
                 break;
         }
     }
     return 0;
 }
+
