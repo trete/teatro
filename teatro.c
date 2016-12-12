@@ -7,6 +7,7 @@
 #define VAGO 2
 #define CORREDOR 88
 #define NUMERO_SESSOES 10
+#define LIMITE_FILA 360
 typedef struct {
     int cod;
     int status;
@@ -20,6 +21,11 @@ typedef struct {
 } sessao;
 
 typedef struct {
+	assento reserva[LIMITE_FILA];
+	int inicio, fim, total;
+}filaEstatica;
+
+typedef struct {
     sessao item[NUMERO_SESSOES];
     int prim;
     int ult;
@@ -28,6 +34,48 @@ typedef struct {
 void criarListaVazia(listaEstatica *l) {
     l->prim = 0;
     l->ult  = 0;
+}
+
+void criarFilaVazia(filaEstatica *fila){
+	fila->inicio = 0;
+	fila->fim = 0;
+	fila->total = 0;
+}
+
+verificaFilaCheia(filaEstatica fila){
+	return ((fila.fim+1) % LIMITE_FILA == fila.fim);
+}
+
+int verificaFilaVazia(filaEstatica fila){
+	return fila.inicio == fila.fim;
+}
+
+int reservaAssento(sessao apresentacao, filaEstatica *fila, assento cadeira){
+	if(verificaFilaCheia(*fila)){
+		printf("Assentos esgotados, tente outra sessão");
+	} else if(cadeira.status != RESERVADO) {
+		fila->reserva[fila->fim] = cadeira;
+		fila->reserva[fila->fim].status = RESERVADO;
+		fila->fim = (fila->fim + 1) % LIMITE_FILA;
+		fila->total++;
+		
+	} else {
+		printf("O assento especificado já foi reservado");
+	}
+}
+
+int cancelarReserva(sessao apresentacao, filaEstatica *fila, assento *cadeira){
+	if(verificaFilaVazia) {
+		printf("Não há reservas");
+	} else if(cadeira->status = RESERVADO) {
+		*cadeira = fila->reserva[fila->inicio];
+		fila->reserva[fila->inicio].status = AVENDA;
+		fila->inicio = (fila->inicio + 1) % LIMITE_FILA;
+		fila->total--;
+	} else {
+		printf("Esse assento não foi reservado");
+	}
+	
 }
 
 int verificaListaVazia(listaEstatica l){
