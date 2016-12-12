@@ -255,8 +255,7 @@ int main() {
     listaEstatica listaSessoes;
 
 	filaEstatica *filaReservas;
-    palco();
-
+  
     //Apenas cria o teatro com os lugares previamente preenchidos com status VAGO
     resetTeatro(matrizTeatro);
 
@@ -264,6 +263,8 @@ int main() {
 
     int linha, coluna, opcao, codigo, indice;
     while (opcao != 7) {
+		palco();
+
 		exibeMatrizTeatro(matrizTeatro);
         printf("\nOPCAO: ");
         scanf("%d", &opcao);
