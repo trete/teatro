@@ -259,13 +259,13 @@ int main() {
     //Apenas cria o teatro com os lugares previamente preenchidos com status VAGO
     resetTeatro(matrizTeatro);
 
-    menu();
 
     int linha, coluna, opcao, codigo, indice;
     while (opcao != 7) {
 		palco();
-
 		exibeMatrizTeatro(matrizTeatro);
+		menu();
+
         printf("\nOPCAO: ");
         scanf("%d", &opcao);
         switch (opcao) {
