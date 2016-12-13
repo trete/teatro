@@ -142,7 +142,7 @@ void removeElementoLista(listaEstatica *l, sessao *apresentacao) {
 
 void exibirSessao(sessao s) {
     printf("\n=====================\n");
-    printf("Codigo do assento: %d\n", s.codSessao);
+    printf("Codigo da sessao: %d\n", s.codSessao);
     printf("Nome apresentacao: %s\n", s.nomeSessao);
     printf("Data da apresentacao: %s\n", s.data);
 }
