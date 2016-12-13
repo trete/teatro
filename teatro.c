@@ -27,7 +27,7 @@ typedef struct {
     char nomeSessao[40];
     char data[9];
     filaEstatica filaReservas;
-    
+
 } sessao;
 typedef struct {
     sessao item[NUMERO_SESSOES];
@@ -72,7 +72,7 @@ int reservaAssento(filaEstatica *fila, assento cadeira){
 		fila->reserva[fila->fim].status = RESERVADO;
 		fila->fim = (fila->fim + 1) % LIMITE_FILA;
 		fila->total++;
-		
+
 	} else {
 		printf("O assento especificado já foi reservado");
 	}
@@ -89,7 +89,7 @@ int cancelarReserva(filaEstatica *fila, assento *cadeira){
 	} else {
 		printf("Esse assento não foi reservado");
 	}
-	
+
 }
 
 typedef assento teatro;
@@ -210,15 +210,14 @@ void exibeMatrizTeatro(teatro assentos[LIN][COL]) {
     }
 }
 
-void cadastrarSessao(sessao apresentacao) {
+void cadastrarSessao(sessao *apresentacao) {
     printf("\n\t\t C A D A S T R O  ||  S E S S A O\n");
     printf("\nInsira o codigo da sessao: ");
-    scanf("%d", apresentacao.codSessao);
+    scanf("%d", &apresentacao->codSessao);
     printf("\nInsira o nome da apresentacao: ");
-    gets(apresentacao.nomeSessao);
+    scanf("%s", apresentacao->nomeSessao);
     getchar();
-    _strdate(apresentacao.data);
-
+    _strdate(apresentacao->data);
 }
 
 
@@ -255,7 +254,7 @@ int main() {
     listaEstatica listaSessoes;
 
 	filaEstatica *filaReservas;
-  
+
     //Apenas cria o teatro com os lugares previamente preenchidos com status VAGO
     resetTeatro(matrizTeatro);
 
@@ -270,7 +269,10 @@ int main() {
         scanf("%d", &opcao);
         switch (opcao) {
             case 1:
-                cadastrarSessao(apresentacao);
+                cadastrarSessao(&apresentacao);
+                printf("\n Cadastro Realizado com sucesso! \n");
+                insereElementoLista(&listaSessoes, apresentacao);
+                printf("\n UMA SESSAO FOI ADICIONADA NA LISTA ! \n");
                 break;
             case 2:
 
@@ -318,6 +320,8 @@ int main() {
                 break;
             case 7:
             	printf("\nTenha um bom dia!\nFinalizando...\n");
+                break;
+            default:
                 break;
         }
     }
